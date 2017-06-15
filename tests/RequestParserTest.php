@@ -20,15 +20,15 @@ class RequestParserTest extends TestCase
 
     public function setUp()
     {
+        $this->parser = new RequestParser();
+    }
+
+    public function test() {
         $method = "post";
         $url = "http://localhost/api/testBlock1";
         $body = $this->getData();
         $request = Request::create($url, $method, $body);
-        $this->parser = new RequestParser($request);
-    }
-
-    public function test() {
-        $data = $this->parser->getParams();
+        $data = $this->parser->getParamsFromRequest($request);
         $this->assertTrue($this->getData() == $data);
     }
 

@@ -14,18 +14,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class RequestParser
 {
-    private $request;
-
-    public function __construct(Request $request)
+    public function getParamsFromRequest(Request $request): array
     {
-        $this->request = $request;
-    }
-
-    public function getParams(): array
-    {
-        $jsonContent = $this->request->getContent();
+        $jsonContent = $request->getContent();
         if (empty($jsonContent)) {
-            $result = $this->request->request->all();
+            $result = $request->request->all();
         } else {
             $data = $this->normalizeJson($jsonContent);
             $data = str_replace('\"', '"', $data);
