@@ -12,6 +12,7 @@ namespace RapidAPI\Tests;
 use PHPUnit\Framework\TestCase;
 use RapidAPI\Service\RequestParser;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class RequestParserTest extends TestCase
 {
@@ -28,7 +29,9 @@ class RequestParserTest extends TestCase
         $url = "http://localhost/api/testBlock1";
         $body = $this->getData();
         $request = Request::create($url, $method, $body);
-        $data = $this->parser->getParamsFromRequest($request);
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+        $data = $this->parser->getParamsFromRequest($requestStack);
         $this->assertTrue($this->getData() == $data);
     }
 

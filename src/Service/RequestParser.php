@@ -10,12 +10,13 @@
 namespace RapidAPI\Service;
 
 use RapidAPI\Exception\PackageException;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class RequestParser
 {
-    public function getParamsFromRequest(Request $request): array
+    public function getParamsFromRequest(RequestStack $requestStack): array
     {
+        $request = $requestStack->getMasterRequest();
         $jsonContent = $request->getContent();
         if (empty($jsonContent)) {
             $result = $request->request->all();
