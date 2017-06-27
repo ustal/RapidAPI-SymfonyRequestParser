@@ -10,22 +10,32 @@
 namespace RapidAPI\Service;
 
 use RapidAPI\Exception\PackageException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class RequestParser
 {
-    public function getParamsFromRequest(RequestStack $requestStack): array
+    /** @var Request */
+    protected $request;
+
+    public function __construct(RequestStack $requestStack)
     {
-        $request = $requestStack->getMasterRequest();
-        $jsonContent = $request->getContent();
+        $this->request = $requestStack->getMasterRequest();
+    }
+
+    public function getParams(): array
+    {
+        $jsonContent = $this->request->getContent();
         if (empty($jsonContent)) {
-            $result = $request->request->all();
+            $result = $this->request->request->all();
         } else {
             $data = $this->normalizeJson($jsonContent);
             $data = str_replace('\"', '"', $data);
             $result = json_decode($data, true);
             if (json_last_error() != 0) {
-                throw new PackageException(json_last_error_msg() . '. Incorrect input JSON. Please, check fields with JSON input.');
+                throw new PackageException(
+                    json_last_error_msg().'. Incorrect input JSON. Please, check fields with JSON input.'
+                );
             }
         }
 
@@ -34,8 +44,12 @@ class RequestParser
 
     private function normalizeJson($data)
     {
-        return preg_replace_callback('~"([\[{].*?[}\]])"~s', function ($match) {
-            return preg_replace('~\s*"\s*~', "\"", $match[1]);
-        }, $data);
+        return preg_replace_callback(
+            '~"([\[{].*?[}\]])"~s',
+            function ($match) {
+                return preg_replace('~\s*"\s*~', "\"", $match[1]);
+            },
+            $data
+        );
     }
 }

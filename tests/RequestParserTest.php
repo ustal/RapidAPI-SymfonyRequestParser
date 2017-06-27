@@ -19,35 +19,35 @@ class RequestParserTest extends TestCase
     /** @var RequestParser */
     private $parser;
 
-    public function setUp()
-    {
-        $this->parser = new RequestParser();
-    }
 
-    public function test() {
+    public function test()
+    {
+
         $method = "post";
         $url = "http://localhost/api/testBlock1";
         $body = $this->getData();
         $request = Request::create($url, $method, $body);
         $requestStack = new RequestStack();
         $requestStack->push($request);
-        $data = $this->parser->getParamsFromRequest($requestStack);
+        $this->parser = new RequestParser($requestStack);
+        $data = $this->parser->getParams();
         $this->assertTrue($this->getData() == $data);
     }
 
-    private function getData() {
+    private function getData()
+    {
         return [
             "accessToken" => "asd",
             "json" => [
                 [
-                    "test" => "test"
+                    "test" => "test",
                 ],
                 [
                     "test3" => [
-                        "test4" => "test5"
-                    ]
-                ]
-            ]
+                        "test4" => "test5",
+                    ],
+                ],
+            ],
         ];
     }
 }
